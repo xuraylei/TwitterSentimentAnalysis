@@ -114,6 +114,12 @@ def display():
 def saveResult():
     return
 
+def visualization():
+   
+    
+    return
+
+
 def loadFromCSV():
     for root, dirs, files in os.walk('data'):
         for dir in dirs:
