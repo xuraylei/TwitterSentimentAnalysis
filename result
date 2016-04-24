@@ -1,18 +1,9 @@
-data/week1/Bernie Sanders.csv
-data/week1/Donald Trump.csv
-data/week1/Hillary Rodham Clinton.csv
-data/week1/John Kasich.csv
-data/week1/Ted Cruz.csv
-data/week2/Bernie Sanders.csv
-data/week2/Donald Trump.csv
-data/week2/Hillary Rodham Clinton.csv
-data/week2/John Kasich.csv
-data/week2/Ted Cruz.csv
-data/week3/Bernie Sanders.csv
-data/week3/Donald Trump.csv
-data/week3/Hillary Rodham Clinton.csv
-data/week3/John Kasich.csv
-data/week3/Ted Cruz.csv
+The summary for data set:
+The total number of tweets for Donald Trump 31382
+The total number of tweets for Bernie Sanders 30375
+The total number of tweets for John Kasich 30869
+The total number of tweets for Ted Cruz 31387
+The total number of tweets for Hillary Rodham Clinton 6073
 --------------------------------------
 The summary positive result for Donald Trump
 week1 : 228

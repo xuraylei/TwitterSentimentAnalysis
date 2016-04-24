@@ -13,12 +13,13 @@ DISTINCT_THRESHOLD = 0.3
 tweets = {}
 
 pos_tweets = {}
-neg_tweets = {} 
+neg_tweets = {}
 
 #summary result
 result = {}
-result['pos'] = {}
-result['neg'] = {}
+result['sum'] = {}  #statistics for all tweets
+result['pos'] = {}  #statistics for positive tweets
+result['neg'] = {}  #statistics for negative tweets
 
 def main():
     
@@ -31,9 +32,21 @@ def main():
 def sentiAnalyze():
     analyzer = SentimentIntensityAnalyzer()
 
+
     for candidate in tweets:
         for week in tweets[candidate]:
             for tweet in tweets[candidate][week]:
+                if candidate not in result['sum']:
+                    result['sum'][candidate] = {}
+                if 'total' not in result['sum'][candidate]:
+                    result['sum'][candidate]['total'] = 0
+                if week not in result['sum'][candidate]:
+                    result['sum'][candidate][week] = 0
+
+                result['sum'][candidate][week] += 1
+                result['sum'][candidate]['total'] += 1
+
+
                 score = analyzer.polarity_scores(tweet[2])
                 if (score['pos'] - score['neg']) > DISTINCT_THRESHOLD:
                     if candidate not in pos_tweets:
@@ -41,7 +54,7 @@ def sentiAnalyze():
                     if week not in pos_tweets[candidate]:
                         pos_tweets[candidate][week] = []
                     pos_tweets[candidate][week].append(tweet)
-                    
+                   
                     if candidate not in result['pos']:
                         result['pos'][candidate] = {}
                     if 'total' not in result['pos'][candidate]:
@@ -70,6 +83,10 @@ def sentiAnalyze():
     return
 
 def display():
+    print 'The summary for data set:'
+    for candidate in tweets:
+        print 'The total number of tweets for ' + candidate + ' ' + str(result['sum'][candidate]['total'] + result['neg'][candidate]['total'])
+ 
     for candidate in result['pos']:
         print '--------------------------------------'
         print 'The summary positive result for ' + candidate
@@ -102,7 +119,7 @@ def loadFromCSV():
         for dir in dirs:
             path = os.path.join(root, dir)
             for file in glob.glob(path + '/*.csv'):
-                print file
+                #print file
                 with open(file, 'rb') as csvfile:
                     time = csvfile.name.split('/')[1]
                     name = csvfile.name.split('/')[-1].split('.')[0]
