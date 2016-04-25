@@ -115,9 +115,43 @@ def display():
 def saveResult():
     return
 
-def visualization():
-    return
 
+def visualization():
+    import numpy as np
+    import matplotlib.pyplot as plot
+
+    candidate_num = 5
+    index = np.arange(candidate_num)
+
+    cand = ('Bernie Sanders', 'Donald Trump', 'Hillary Rodham Clinton', 'John Kasich', 'Ted Cruz')
+    n_group = 5
+
+    bar_width = 0.35
+    opacity = 0.4 
+
+    candidate_pos = []
+    candidate_neg = []
+    for candidate in cand:
+        candidate_pos.append(result['pos'][candidate]['total'])
+        candidate_neg.append(result['neg'][candidate]['total'])
+
+    candidate_pos = tuple(candidate_pos)
+    candidate_neg = tuple(candidate_neg)
+
+    rects1 = plot.bar(index, candidate_pos, bar_width, alpha = opacity,
+        color = 'b', label = 'positive')
+    rects2 = plot.bar(index + bar_width, candidate_neg, bar_width, alpha = opacity,
+        color = 'r', label = 'negative')
+
+    plot.xlabel('Candidate')
+    plot.ylabel('tweets')
+    plot.title('Positive and Negative tweets for president candidate in 2016')
+    plot.xticks(index + bar_width, cand)
+    plot.legend()
+    plot.tight_layout()
+
+    plot.show()
+    return
 
 #retrieve data from Solr server
 def searchFromSolr(keyword, url):
