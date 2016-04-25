@@ -23,7 +23,8 @@ result['neg'] = {}  #statistics for negative tweets
 
 def main():
     
-    loadFromCSV()
+#    loadFromCSV()
+    searchFromSolr('Hillary','http://localhost:8983/solr/tweets/')
     sentiAnalyze()
     display()
     return
@@ -115,9 +116,29 @@ def saveResult():
     return
 
 def visualization():
-   
-    
     return
+
+
+#retrieve data from Solr server
+def searchFromSolr(keyword, url):
+    url = url + 'select?q=' + keyword + '/%0A&wt=csv&indet=true&rows=100000'
+    print url
+    import urllib2
+
+    request = urllib2.Request(url)
+    response = urllib2.urlopen(request).read()
+
+    
+    if keyword not in tweets:
+        tweets[keyword] = {}
+    if 'solr' not in tweets[keyword]:
+        tweets[keyword]['solr'] = []
+
+
+    for line in response.splitlines():
+        tweet = line.split(',')
+        tweets[keyword]['solr'].append(tweet)
+    
 
 
 def loadFromCSV():
