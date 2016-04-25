@@ -26,7 +26,8 @@ def main():
 #    loadFromCSV()
     searchFromSolr('Hillary','http://localhost:8983/solr/tweets/')
     sentiAnalyze()
-    display()
+    visualization()
+   # display()
     return
 
 
@@ -116,41 +117,51 @@ def saveResult():
     return
 
 
-def visualization():
+def visualization(opt, candiate = null):
     import numpy as np
     import matplotlib.pyplot as plot
 
-    candidate_num = 5
-    index = np.arange(candidate_num)
+    if opt == 'historygram':
+        candidate_num = 5
+        index = np.arange(candidate_num)
 
-    cand = ('Bernie Sanders', 'Donald Trump', 'Hillary Rodham Clinton', 'John Kasich', 'Ted Cruz')
-    n_group = 5
+        cand = ('Bernie Sanders', 'Donald Trump', 'Hillary Rodham Clinton', 'John Kasich', 'Ted Cruz')
+        n_group = 5
 
-    bar_width = 0.35
-    opacity = 0.4 
+        bar_width = 0.35
+        opacity = 0.4 
 
-    candidate_pos = []
-    candidate_neg = []
-    for candidate in cand:
-        candidate_pos.append(result['pos'][candidate]['total'])
-        candidate_neg.append(result['neg'][candidate]['total'])
+        candidate_pos = []
+        candidate_neg = []
+        for candidate in cand:
+            candidate_pos.append(result['pos'][candidate]['total'])
+            candidate_neg.append(result['neg'][candidate]['total'])
 
-    candidate_pos = tuple(candidate_pos)
-    candidate_neg = tuple(candidate_neg)
+        candidate_pos = tuple(candidate_pos)
+        candidate_neg = tuple(candidate_neg)
 
-    rects1 = plot.bar(index, candidate_pos, bar_width, alpha = opacity,
-        color = 'b', label = 'positive')
-    rects2 = plot.bar(index + bar_width, candidate_neg, bar_width, alpha = opacity,
+        rects1 = plot.bar(index, candidate_pos, bar_width, alpha = opacity,
+            color = 'b', label = 'positive')
+        rects2 = plot.bar(index + bar_width, candidate_neg, bar_width, alpha = opacity,
         color = 'r', label = 'negative')
 
-    plot.xlabel('Candidate')
-    plot.ylabel('tweets')
-    plot.title('Positive and Negative tweets for president candidate in 2016')
-    plot.xticks(index + bar_width, cand)
-    plot.legend()
-    plot.tight_layout()
-
-    plot.show()
+        plot.xlabel('Candidate')
+        plot.ylabel('tweets')
+        plot.title('Positive and Negative tweets for president candidate in 2016')
+        plot.xticks(index + bar_width, cand)
+        plot.legend()
+        plot.tight_layout()
+    
+    elif opt == 'pie':
+        
+        labels = ('positive', 'negative', 'neutral')
+        fracs = [15,40,45]
+        color = ['blue', 'red', 'lightcoral']
+        explode = (0, 0.1, 0)
+        plot.pie(sizespie(fracs, explode=explode, labels=labels,
+                        autopct='%1.1f%%', shadow=True, startangle=90)
+        plot.title('The setiment analysis for candidate ' + candidate)
+        plot.show()
     return
 
 #retrieve data from Solr server
