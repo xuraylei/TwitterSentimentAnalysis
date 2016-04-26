@@ -4,6 +4,7 @@ Usage:
 ./SentimentAnalyzer.py {options} [parameter]
 
 Support examples:
+
 1.Overall results for all candidates
 
 ./SentimentAnalyzer.py overall
