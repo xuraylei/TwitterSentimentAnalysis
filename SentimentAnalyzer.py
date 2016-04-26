@@ -2,6 +2,7 @@
 
 from nltk import tokenize
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from math import sqrt
 
 import sys
 import os
@@ -30,11 +31,11 @@ def main(argv):
     elif len(argv) == 2:
         mode = argv[0]
         keyword = argv[1]
-    
+
     if mode == 'overall' or  mode == 'time':
         loadFromCSV()
     elif mode == 'query':
-        searchFromSolr('Hillary','http://localhost:8983/solr/tweets/')
+        searchFromSolr(keyword,'http://localhost:8983/solr/tweets/')
      
     sentiAnalyze()
     visualization(mode,keyword)
@@ -128,7 +129,7 @@ def saveResult():
     return
 
 
-def visualization(opt, candiate = None):
+def visualization(opt, candidate = None):
     import numpy as np
     import matplotlib.pyplot as plot
 
@@ -163,22 +164,60 @@ def visualization(opt, candiate = None):
         plot.legend()
         plot.tight_layout()
     elif opt == 'time':
-        pass
+        week_num = 4
+        index = np.arange(week_num)
+
+        week = ('week1', 'week2', 'week3', 'week4')
+        w_group = 4
+
+        bar_width = 0.35
+        opacity = 0.4
+
+        week_positive = []
+        week_negative = []
+        #normalize the sentiment counts 
+        for w in week:
+            week_positive.append(result['pos'][candidate][w]/sqrt(result['pos'][candidate]['total']))
+            week_negative.append(result['neg'][candidate][w]/sqrt(result['neg'][candidate]['total']))
+
+        plot.bar(index, week_positive, bar_width, color = 'b', label = 'positive')
+        plot.bar(index+bar_width, week_negative, bar_width, color = 'r', label = 'negative')
+
+        plot.xlabel('Week')
+        plot.ylabel('tweets')
+        plot.title('Positive and Negative tweets (normalized) for' + candidate + ' in four weeks data set')
+        plot.xticks(index + bar_width, week)
+        plot.legend()
+
+
     elif opt == 'query':
         
         labels = ('positive', 'negative', 'neutral')
         fracs = [15,40,45]
         color = ['blue', 'red', 'lightcoral']
         explode = (0, 0.1, 0)
-        plot.pie(sizespie(fracs, explode=explode, labels=labels,autopct='%1.1f%%', shadow=True, startangle=90))
+        plot.pie(fracs, explode=explode, labels=labels,autopct='%1.1f%%', shadow=True, startangle=90)
         plot.title('The setiment analysis for candidate ' + candidate)
     
     plot.show()
     return
 
+def getWords(text):
+    import re
+    return re.compile('\w+').findall(text)
+
 #retrieve data from Solr server
 def searchFromSolr(keyword, url):
-    url = url + 'select?q=' + keyword + '/%0A&wt=csv&indet=true&rows=100000'
+    url += 'select?q='
+    # parse words from option
+    words = getWords(keyword)
+    if len(words) == 1:
+        url +=  words[0]
+    else:
+        url += words[0]
+        for e in words[1:]:
+            url = url + '+' + e
+    url += '/%0A&wt=csv&indet=true&rows=100000'   
     print url
     import urllib2
 
