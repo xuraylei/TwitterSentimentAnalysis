@@ -10,7 +10,7 @@ import glob
 import csv
 
 #if |positive_score - negative_core| > DISTINCT_THREASHOLD, we consider people have attitude towards to event
-DISTINCT_THRESHOLD = 0.3
+DISTINCT_THRESHOLD = 0.01
 
 tweets = {}
 
@@ -193,7 +193,10 @@ def visualization(opt, candidate = None):
     elif opt == 'query':
         
         labels = ('positive', 'negative', 'neutral')
-        fracs = [15,40,45]
+        pos = result['pos'][candidate]['total']
+        neg = result['neg'][candidate]['total']
+        total = result['sum'][candidate]['total']
+        fracs = [pos, neg, total]
         color = ['blue', 'red', 'lightcoral']
         explode = (0, 0.1, 0)
         plot.pie(fracs, explode=explode, labels=labels,autopct='%1.1f%%', shadow=True, startangle=90)
