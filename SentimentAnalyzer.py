@@ -3,6 +3,7 @@
 from nltk import tokenize
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
+import sys
 import os
 import glob
 import csv
@@ -21,13 +22,23 @@ result['sum'] = {}  #statistics for all tweets
 result['pos'] = {}  #statistics for positive tweets
 result['neg'] = {}  #statistics for negative tweets
 
-def main():
+def main(argv):
+    mode = 'overall'  # we support three modes: overall for all candidates, time for time series analysis for a candidate, query for one candidate via Solr
+    keyword = None 
+    if len(argv) == 1:
+        mode = argv[0];
+    elif len(argv) == 2:
+        mode = argv[0]
+        keyword = argv[1]
     
-#    loadFromCSV()
-    searchFromSolr('Hillary','http://localhost:8983/solr/tweets/')
+    if mode == 'overall' or  mode == 'time':
+        loadFromCSV()
+    elif mode == 'query':
+        searchFromSolr('Hillary','http://localhost:8983/solr/tweets/')
+     
     sentiAnalyze()
-    visualization()
-   # display()
+    visualization(mode,keyword)
+    #display()
     return
 
 
@@ -117,11 +128,11 @@ def saveResult():
     return
 
 
-def visualization(opt, candiate = null):
+def visualization(opt, candiate = None):
     import numpy as np
     import matplotlib.pyplot as plot
 
-    if opt == 'historygram':
+    if opt == 'overall':
         candidate_num = 5
         index = np.arange(candidate_num)
 
@@ -151,17 +162,18 @@ def visualization(opt, candiate = null):
         plot.xticks(index + bar_width, cand)
         plot.legend()
         plot.tight_layout()
-    
-    elif opt == 'pie':
+    elif opt == 'time':
+        pass
+    elif opt == 'query':
         
         labels = ('positive', 'negative', 'neutral')
         fracs = [15,40,45]
         color = ['blue', 'red', 'lightcoral']
         explode = (0, 0.1, 0)
-        plot.pie(sizespie(fracs, explode=explode, labels=labels,
-                        autopct='%1.1f%%', shadow=True, startangle=90)
+        plot.pie(sizespie(fracs, explode=explode, labels=labels,autopct='%1.1f%%', shadow=True, startangle=90))
         plot.title('The setiment analysis for candidate ' + candidate)
-        plot.show()
+    
+    plot.show()
     return
 
 #retrieve data from Solr server
@@ -212,4 +224,4 @@ def dedup(tweets):
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
